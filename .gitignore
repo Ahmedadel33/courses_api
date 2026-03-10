@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+jspm_packages/
+.pnp.*
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Build/Environment
+dist/
+build/
+.env
+.env.test
+
+# Coverage/Cache
+coverage/
+.nyc_output
+.cache/
+.parcel-cache/

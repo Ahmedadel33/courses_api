@@ -11,7 +11,7 @@ const asyncWrapper =require("../middleware/asyncwraber")
 
 // get all courses
 routes.route('/')
-                .get(asyncWrapper(coursecontroller.getalluser))
+                .get(asyncWrapper(coursecontroller.getallCourse))
                 .post([body('title').notEmpty().isLength({min:2})],asyncWrapper(coursecontroller.addcoures))
 
 //add get and post and delete in group

@@ -5,48 +5,33 @@ const { default: mongoose } = require("mongoose");
 const Helper=require("../utilities/helper.fun.js")
 const Course = require("../model/course.model.js");
 //route get all user
-const getalluser = async (req, res) => {
+const getallCourse = async (req, res) => {
   //paginition
 const query=req.query;
-const limit=query.limit || 2;
+const limit=query.limit || 3;
  const page= query.page || 1;
  const skip= (page -1)*limit;
-  const courses = await Course.find({/*title: "object orianted programming"*/},{"auther": false}).limit(limit).skip(skip)
-  res.json(courses);
+  const courses = await Course.find({} , {"__v" : false }  ,{"auther": false}).limit(limit).skip(skip)
+  res.json({status: "suscess" , data : courses});
 };
 
 const getCourseById =
   async (req, res) => {
       const search = await Course.findById(req.params.id);
       if (!search) {
-        res.status(404).json({message: Helper.FAIL});
+        res.status(404).json({message: "eror in object id" });
       }
       res.status(200).json({massage:Helper.SUCCESS,
         data: search,
       });
       };
-  //     try {
-
-  // } catch (error) {
-  //   res.status(404).json({massage:Helper.FAIL,
-  //     data: null
-  //   });
-  // }
-// };
-// add new course
+  
 const addcoures = async (req, res) => {
  
   const newCours = new Course(req.body);
   await newCours.save();
   res.status(201).json({ message: Helper.SUCCESS ,massage: "Courses aded"  , data: newCours });};
-//  try {
-    
-//   } catch (error) {
-    
-//   }
-//   res.status(404).json({ message: Helper.FAIL ,massage: "Courses not aded" });
-// };
-// edit on faild in course
+
 const editcourse = async (req, res) => {
  
     let request = req.params.id;
@@ -71,9 +56,10 @@ const deleted = async (req, res) => {
     const dellet = req.params.id;
     const course = await Course.findByIdAndDelete(dellet);
       if(!course){
-    return  res.status(400).json({status:Helper.FAIL,message: "course id not found" })
+    return  res.status(400).json({status:Helper.FAIL,message: "invalid object" })
     }
      return res.status(200).json({
+      status : "sucess",
       message: "Course deleted",
       data:null
       });
@@ -83,7 +69,7 @@ const deleted = async (req, res) => {
   // }
 };
 module.exports = {
-  getalluser,
+  getallCourse,
   // getcourse,
   getCourseById,
   addcoures,

@@ -1,4 +1,4 @@
-
+const connecteddb = require("./config/db.js")
 const express =require("express");
 const app= express();
 app.use(express.json()); 
@@ -7,26 +7,21 @@ const dotenv = require("dotenv")
 const Helper=require("./utilities/helper.fun.js")
 // console.log(process.env);
 
+var cors = require('cors')
+app.use(cors({
 
-const middleware= (req,res,next)=>{
-    console.log("im middleware");
-        next()
-}
-app.use(middleware)
-// Enviroment Proce
+}))
+
+
 dotenv.config({path : "./.env"})
-const url= process.env.mongo_url
 const port= process.env.port
-// console.log(process);
+connecteddb()
 
-mongoose.connect(url).then(()=>{
-    console.log("moongoose connected");
-})
+const userRoutes = require("./routs/routs.user.js");
 
 const courseRoutes = require("./routs/routs.courses");
 app.use("/api/courses", courseRoutes); 
-
-//  دا بتاع الراوتس اللي مش موجوده فقط 
+app.use("/api/user",userRoutes) 
 app.use( (req, res) =>{  
     res.status(404).json({
     status: Helper.FAIL,
@@ -34,7 +29,6 @@ app.use( (req, res) =>{
 })
 });
 
-// دا بتاع الايرور اللي بيحصل في السيرفر علي الراوتس اللي موجوده
 app.use((err, req, res,next) => {
     res.status(500).json({
         status: Helper.ERROR,  
@@ -44,9 +38,6 @@ app.use((err, req, res,next) => {
     })
 });
         
-
-
-
 
 
 app.listen(port || 4000,()=>{

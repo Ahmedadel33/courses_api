@@ -16,7 +16,7 @@
   "scripts": {
     "start": "node code.js",
     "dev": "nodemon code.js",
-    "test": "echo \"No tests yet\""
+     "test": "jest"
   },
   "devDependencies": {
     "jest": "^30.4.2",

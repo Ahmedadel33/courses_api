@@ -45,3 +45,4 @@ jobs:
           exit-code: '1'
           vuln-type: 'os'
           severity: 'CRITICAL,HIGH'
+          

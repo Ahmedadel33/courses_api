@@ -12,7 +12,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0 # ضروري لفحص تاريخ الـ Git بـ Gitleaks
+        fetch-depth: 0
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
@@ -22,27 +22,27 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    # 1. Secret Check باستخدام Gitleaks
+    # 1. Secret Check (Gitleaks)
     - name: Gitleaks Scan (Secret Check)
       uses: gitleaks/gitleaks-action@v2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    # 2. SCA Check (فحص ثغرات الحزم والمكتبات)
+    # 2. SCA Check (npm audit)
     - name: Software Composition Analysis (SCA)
       run: npm audit --audit-level=high
 
-    # 3. SAST Check (فحص الثغرات البرمجية في الكود)
+    # 3. SAST / Code Security (فحص الاعتماديات والملفات المعرضة للخطر عبر Retire.js)
     - name: Static Application Security Testing (SAST)
-      uses: ajinabraham/NodeJsScan-Action@master
-      with:
-        args: .
+      run: |
+        npm install -g retire
+        retire --node
 
-    # 4. بناء صورة Docker محلياً للتأكد من سلامتها
+    # 4. بناء صورة Docker محلياً
     - name: Build Docker image locally
       run: docker build -t codezone-app:latest .
 
-    # 5. Image Security Check (فحص الثغرات داخل صورة الدوكر بـ Trivy)
+    # 5. Image Security Check (Trivy)
     - name: Run Trivy vulnerability scanner for Docker Image
       uses: aquasecurity/trivy-action@master
       with:
@@ -50,4 +50,5 @@ jobs:
         format: 'table'
         exit-code: '1'
         vuln-type: 'os,package'
-        severity: 'CRITICAL,HIGH'
+        severity: 'CRITICAL,HIGH'  
+        

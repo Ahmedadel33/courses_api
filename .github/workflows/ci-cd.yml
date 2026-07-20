@@ -22,28 +22,23 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    # 1. Secret Check (Gitleaks)
-    - name: Gitleaks Scan (Secret Check)
+     - name: Gitleaks Scan (Secret Check)
       uses: gitleaks/gitleaks-action@v2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    # 2. SCA Check (npm audit)
-    - name: Software Composition Analysis (SCA)
+     - name: Software Composition Analysis (SCA)
       run: npm audit --audit-level=high
 
-    # 3. SAST / Code Security (فحص الاعتماديات والملفات المعرضة للخطر عبر Retire.js)
-    - name: Static Application Security Testing (SAST)
+     - name: Static Application Security Testing (SAST)
       run: |
         npm install -g retire
         retire --node
 
-    # 4. بناء صورة Docker محلياً
-    - name: Build Docker image locally
+     - name: Build Docker image locally
       run: docker build -t codezone-app:latest .
 
-    # 5. Image Security Check (Trivy)
-    - name: Run Trivy vulnerability scanner for Docker Image
+     - name: Run Trivy vulnerability scanner for Docker Image
       uses: aquasecurity/trivy-action@master
       with:
         image-ref: 'codezone-app:latest'
@@ -51,4 +46,4 @@ jobs:
         exit-code: '1'
         vuln-type: 'os,package'
         severity: 'CRITICAL,HIGH'  
-        
+

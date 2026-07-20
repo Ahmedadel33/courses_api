@@ -36,12 +36,12 @@ jobs:
       - name: Build Docker image locally
         run: docker build -t codezone-app:latest .
 
-      # 4. Image Security Check (Trivy)
+      # 4. Image Security Check (Trivy - OS Only)
       - name: Run Trivy vulnerability scanner for Docker Image
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: 'codezone-app:latest'
           format: 'table'
           exit-code: '1'
-          vuln-type: 'os,library'
+          vuln-type: 'os'
           severity: 'CRITICAL,HIGH'

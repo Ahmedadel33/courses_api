@@ -11,7 +11,8 @@ var cors = require('cors')
 app.use(cors({
 
 }))
-
+ 
+module.exports = sum;
 
 dotenv.config({path : "./.env"})
 const port= process.env.port

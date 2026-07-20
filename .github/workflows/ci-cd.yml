@@ -1,0 +1,53 @@
+name: Secure CI Pipeline for Codezone Backend
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  security-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # ضروري لفحص تاريخ الـ Git بـ Gitleaks
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      run: npm install
+
+    # 1. Secret Check باستخدام Gitleaks
+    - name: Gitleaks Scan (Secret Check)
+      uses: gitleaks/gitleaks-action@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # 2. SCA Check (فحص ثغرات الحزم والمكتبات)
+    - name: Software Composition Analysis (SCA)
+      run: npm audit --audit-level=high
+
+    # 3. SAST Check (فحص الثغرات البرمجية في الكود)
+    - name: Static Application Security Testing (SAST)
+      uses: ajinabraham/NodeJsScan-Action@master
+      with:
+        args: .
+
+    # 4. بناء صورة Docker محلياً للتأكد من سلامتها
+    - name: Build Docker image locally
+      run: docker build -t codezone-app:latest .
+
+    # 5. Image Security Check (فحص الثغرات داخل صورة الدوكر بـ Trivy)
+    - name: Run Trivy vulnerability scanner for Docker Image
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'codezone-app:latest'
+        format: 'table'
+        exit-code: '1'
+        vuln-type: 'os,package'
+        severity: 'CRITICAL,HIGH'

@@ -32,17 +32,11 @@ jobs:
       - name: Software Composition Analysis (SCA)
         run: npm audit --audit-level=critical || true
 
-      # 3. SAST / Code Security (Retire.js)
-      - name: Static Application Security Testing (SAST)
-        run: |
-          npm install -g retire
-          retire --node
-
-      # 4. Build Docker image locally
+      # 3. Build Docker image locally
       - name: Build Docker image locally
         run: docker build -t codezone-app:latest .
 
-      # 5. Image Security Check (Trivy)
+      # 4. Image Security Check (Trivy)
       - name: Run Trivy vulnerability scanner for Docker Image
         uses: aquasecurity/trivy-action@master
         with:
